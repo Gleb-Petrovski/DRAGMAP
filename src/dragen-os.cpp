@@ -15,6 +15,7 @@
 #include <fstream>
 #include <limits>
 
+#include "include/workflow/SimulateReadsWorkflow.hpp"
 #include "workflow/GenHashTableWorkflow.hpp"
 #include "workflow/Input2SamWorkflow.hpp"
 
@@ -22,6 +23,16 @@ int main(int argc, char* argv[])
 {
   dragenos::options::DragenOsOptions opts;
   dragenos::common::parse_options(argc, argv, opts);
-  dragenos::common::run(dragenos::workflow::buildHashTable, opts);
-  dragenos::common::run(dragenos::workflow::input2Sam, opts);
+  if (opts.buildHashTable_ || opts.htUncompress_)
+  {
+    dragenos::common::run(dragenos::workflow::buildHashTable, opts);
+  }
+  else if(opts.simulateReads_)
+  {
+    dragenos::common::run(dragenos::workflow::simulateReads, opts);
+  }
+  else
+  {
+    dragenos::common::run(dragenos::workflow::input2Sam, opts);
+  }
 }

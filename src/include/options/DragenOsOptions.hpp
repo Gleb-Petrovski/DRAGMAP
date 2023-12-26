@@ -36,6 +36,7 @@ private:
   void        SetBuildHashTableOptions(hashTableConfig_t* config, HashTableType hashTableType);
 
 public:
+  bool                    simulateReads_ = false;
   std::string             description_;
   boost::filesystem::path refDir_;
   bool                    mmapReference_ = false;

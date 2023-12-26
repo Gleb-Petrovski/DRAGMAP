@@ -123,7 +123,7 @@ DRAGEN_OS_BUILD_DIR?=$(DRAGEN_OS_BUILD_DIR_BASE)/$(BUILD_TYPE)
 DRAGEN_OS_BUILD:=$(DRAGEN_OS_BUILD_DIR)
 
 ## List the libraries in the order where they should be statically linked
-DRAGEN_OS_LIBS := common options bam fastq sequences io reference map align workflow
+DRAGEN_OS_LIBS := common options bam fastq sequences io reference map align simulation workflow
 
 ## List the libraries from dragen source tree in the order where they should be statically linked
 DRAGEN_LIBS := common/hash_generation host/dragen_api/sampling common host/metrics host/infra/crypto

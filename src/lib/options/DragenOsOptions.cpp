@@ -64,10 +64,13 @@ DragenOsOptions::DragenOsOptions() : refDir_("./"), inputFile1_(""), inputFile2_
       //("mapper_cigar"   , bpo::value<bool>(&mapperCigar_),
       //        "no real alignment, produces alignment information based on seed chains only -- dragen
       //        legacy")
+	  ("simulate-reads", bpo::value<bool>(&simulateReads_)->default_value(simulateReads_),
+	          "Use reference sequence to produce simulated reads according to parameters of the simulation")
       ("mmap-reference",
        bpo::value<bool>(&mmapReference_)->default_value(mmapReference_),
        "memory-map reference data instead of pre-loading. This allows for quicker runs when only a "
-       "handful of reads need to be aligned")(
+       "handful of reads need to be aligned")
+	   (
           "RGID", bpo::value<std::string>(&rgid_)->default_value(rgid_), "Read Group ID")(
           "RGSM", bpo::value<std::string>(&rgsm_)->default_value(rgsm_), "Read Group Sample")(
           "output-directory",

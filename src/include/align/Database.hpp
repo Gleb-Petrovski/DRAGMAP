@@ -16,7 +16,7 @@
 #define ALIGN_DATABASE_HPP
 
 #include <vector>
-
+#include "sequences/Read.hpp"
 namespace dragenos {
 namespace align {
 
