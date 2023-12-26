@@ -36,6 +36,8 @@ private:
   void        SetBuildHashTableOptions(hashTableConfig_t* config, HashTableType hashTableType);
 
 public:
+  int                     maxVarLen_ = 8;
+  int                     varSpacingTarget_ = 50;
   bool                    simulateReads_ = false;
   std::string             description_;
   boost::filesystem::path refDir_;

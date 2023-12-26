@@ -55,13 +55,14 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
 
 
   simulation::SamPrinter output(samFile);
-  simulation::ReadGenerator gen(output);
+  simulation::ReadGenerator rGen(output);
+  simulation::VariantGenerator vGen(options.maxVarLen_, options.varSpacingTarget_);
 
   const auto& seqs = referenceDir.getHashtableConfig().getSequences();
   const auto& seqNames = referenceDir.getHashtableConfig().getSequenceNames();
   for (const auto& s : seqs){
-    const auto vars = simulation::generateVariants(0, s.seqLen);
-    gen.generateReads(s, referenceDir, vars, seqNames.at(s.id_));
+    const auto vars = vGen.generateVariants(0, s.seqLen);
+    rGen.generateReads(s, referenceDir, vars, seqNames.at(s.id_));
 
   }
 

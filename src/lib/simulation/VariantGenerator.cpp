@@ -14,7 +14,7 @@
 
 
 #include <assert.h>
-
+#include <vector>
 
 #include "simulation/VariantGenerator.hpp"
 
@@ -23,34 +23,36 @@ namespace simulation {
 
 
 
-Variants generateVariants(std::uint32_t beginPos, std::uint32_t endPos)
+Variants VariantGenerator::generateVariants(std::uint32_t beginPos, std::uint32_t endPos)
 {
   std::uint32_t cPos = beginPos;
-
-  const int varSpacingTarget = 50;
+  const std::vector<char> bases = {'A','C','T','G'};
   Variants vars;
   while (cPos < endPos){
 
     const int randomValue = std::rand();
     Variant v;
 
+
     v.refPos_ =  cPos;
     if (randomValue %3 == 0){
       v.refLen_ = 0;
-      v.seq_ = "IIIII";
+      for (int i = 0; i < randomValue % maxVarLen_ + 1; i++){
+        v.seq_ += bases.at(std::rand()%4);
+      }
     }
     else if(randomValue %3 == 1)
     {
       v.refLen_ = 1;
-      v.seq_ = "X";
+      v.seq_ = bases.at(randomValue%4);
     }
     else
     {
-      v.refLen_ = 5;
+      v.refLen_ = randomValue % maxVarLen_ + 1;
       v.seq_ = "";
     }
     vars.push_back(v);
-    cPos += v.refLen_ + randomValue % varSpacingTarget + 1;
+    cPos += v.refLen_ + randomValue % varSpacingTarget_ + 1;
   }
   return vars;
 }

@@ -17,8 +17,18 @@
 namespace dragenos{
 namespace simulation{
 
+class VariantGenerator{
+public:
+  const int maxVarLen_;
+  const int varSpacingTarget_;
+  VariantGenerator(const int maxVarLen,  const int varSpacingTarget):maxVarLen_(maxVarLen), varSpacingTarget_(varSpacingTarget)
+  {
 
-Variants generateVariants(std::uint32_t beginPos, std::uint32_t endPos);
+  }
+  Variants generateVariants(std::uint32_t beginPos, std::uint32_t endPos);
+private:
+
+};
 
 }
 }

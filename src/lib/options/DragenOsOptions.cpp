@@ -64,7 +64,11 @@ DragenOsOptions::DragenOsOptions() : refDir_("./"), inputFile1_(""), inputFile2_
       //("mapper_cigar"   , bpo::value<bool>(&mapperCigar_),
       //        "no real alignment, produces alignment information based on seed chains only -- dragen
       //        legacy")
-	  ("simulate-reads", bpo::value<bool>(&simulateReads_)->default_value(simulateReads_),
+      ("Simulate.max-var-len", bpo::value<int>(&maxVarLen_)->default_value(maxVarLen_),
+            "set maximum length of a variant")
+      ("Simulate.var-spacing-target", bpo::value<int>(&varSpacingTarget_)->default_value(varSpacingTarget_),
+            "set maximum length of a variant")
+      ("simulate-reads", bpo::value<bool>(&simulateReads_)->default_value(simulateReads_),
 	          "Use reference sequence to produce simulated reads according to parameters of the simulation")
       ("mmap-reference",
        bpo::value<bool>(&mmapReference_)->default_value(mmapReference_),
