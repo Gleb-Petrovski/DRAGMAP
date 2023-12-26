@@ -55,7 +55,7 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
 
 
   simulation::SamPrinter output(samFile);
-  simulation::ReadGenerator rGen(output);
+  simulation::ReadGenerator rGen(output, options.readLength_, options.readSpacing_);
   simulation::VariantGenerator vGen(options.maxVarLen_, options.varSpacingTarget_);
 
   const auto& seqs = referenceDir.getHashtableConfig().getSequences();

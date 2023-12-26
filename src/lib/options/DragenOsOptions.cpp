@@ -67,7 +67,11 @@ DragenOsOptions::DragenOsOptions() : refDir_("./"), inputFile1_(""), inputFile2_
       ("Simulate.max-var-len", bpo::value<int>(&maxVarLen_)->default_value(maxVarLen_),
             "set maximum length of a variant")
       ("Simulate.var-spacing-target", bpo::value<int>(&varSpacingTarget_)->default_value(varSpacingTarget_),
-            "set maximum length of a variant")
+            "set max spacing between variants")
+      ("Simulate.read-length", bpo::value<int>(&readLength_)->default_value(readLength_),
+            "set read length of simulated reads")
+      ("Simulate.read-spacing", bpo::value<int>(&readSpacing_)->default_value(readSpacing_),
+            "set step between reads")
       ("simulate-reads", bpo::value<bool>(&simulateReads_)->default_value(simulateReads_),
 	          "Use reference sequence to produce simulated reads according to parameters of the simulation")
       ("mmap-reference",

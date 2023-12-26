@@ -22,7 +22,10 @@ namespace simulation{
 class ReadGenerator{
 public:
   SamPrinter& output_;
-  ReadGenerator(SamPrinter& output):output_(output)
+  const int readLength_;
+  const int readSpacing_;
+  ReadGenerator(SamPrinter& output, const int readLength, const int readSpacing):output_(output)
+  , readLength_(readLength), readSpacing_(readSpacing)
   {
   }
   void generateReads(const reference::HashtableConfig::Sequence& s, const reference::ReferenceDir7& referenceDir

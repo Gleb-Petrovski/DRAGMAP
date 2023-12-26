@@ -42,8 +42,7 @@ std::string ReadGenerator::generateSeq(std::uint64_t refPos, const reference::Ha
     ,std::uint32_t varIdx,const Variants& vars, const reference::ReferenceDir7& referenceDir
     , std::string& cigar)
 {
-  const std::uint32_t readLength = 50;
-  std::size_t space = readLength;
+  std::size_t space = readLength_;
   std::string ret;
 
   while(space)
@@ -113,7 +112,6 @@ void ReadGenerator::generateReads(const reference::HashtableConfig::Sequence& s,
     , const Variants& vars, const std::string& seqName)
 {
 
-  const std::uint32_t readSpacing = 5;
   std::uint64_t refPos = 0;
   std::uint32_t varIdx = 0;
 
@@ -134,7 +132,7 @@ void ReadGenerator::generateReads(const reference::HashtableConfig::Sequence& s,
       readSeq = generateSeq(refPos, s, varIdx, vars, referenceDir, cigar);
       output_.printSam(seqName,refPos,cigar, readSeq);
     }
-    refPos += readSpacing;
+    refPos += readSpacing_;
 
   }
 }
