@@ -22,14 +22,14 @@ struct Variant
 {
   std::uint64_t refPos_;
   std::uint32_t refLen_;
-  std::string seq_;
+  std::vector<unsigned char> seq_;
   std::uint64_t refEnd() const
   {
     return refPos_ + refLen_;
   }
   friend std::ostream& operator << (std::ostream& os, const Variant& v)
   {
-    return os << "Variant(" << v.refPos_ << "rp " << v.refLen_ << "rl " << v.seq_ << ")";
+    return os << "Variant(" << v.refPos_ << "rp " << v.refLen_ << "rl ";
   }
 
 };

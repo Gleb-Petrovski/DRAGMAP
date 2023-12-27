@@ -31,11 +31,11 @@ public:
   void generateReads(const reference::HashtableConfig::Sequence& s, const reference::ReferenceDir7& referenceDir
       , const Variants& vars,const std::string& seqName);
 private:
-  std::string extractRef(
+  std::vector<unsigned char> extractRef(
       const reference::ReferenceDir7 &referenceDir,
       const reference::HashtableConfig::Sequence &s, std::uint64_t refPos,
       std::uint32_t matchLen);
-  std::string generateSeq(std::uint64_t refPos, const reference::HashtableConfig::Sequence& s
+  std::vector<unsigned char> generateSeq(std::uint64_t refPos, const reference::HashtableConfig::Sequence& s
       ,std::uint32_t varIdx,const Variants& vars, const reference::ReferenceDir7& referenceDir
       , std::string& cigar);
 };

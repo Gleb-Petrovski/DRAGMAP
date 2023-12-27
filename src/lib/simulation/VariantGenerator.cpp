@@ -26,7 +26,7 @@ namespace simulation {
 Variants VariantGenerator::generateVariants(std::uint32_t beginPos, std::uint32_t endPos)
 {
   std::uint32_t cPos = beginPos;
-  const std::vector<char> bases = {'A','C','T','G'};
+  const std::vector<unsigned char> bases = {0b0001,0b0010,0b0100,0b1000};
   Variants vars;
   while (cPos < endPos){
 
@@ -38,18 +38,18 @@ Variants VariantGenerator::generateVariants(std::uint32_t beginPos, std::uint32_
     if (randomValue %3 == 0){
       v.refLen_ = 0;
       for (int i = 0; i < randomValue % maxVarLen_ + 1; i++){
-        v.seq_ += bases.at(std::rand()%4);
+        v.seq_.push_back(bases.at(std::rand()%4));
       }
     }
     else if(randomValue %3 == 1)
     {
       v.refLen_ = 1;
-      v.seq_ = bases.at(randomValue%4);
+      v.seq_.push_back(bases.at(randomValue%4));
     }
     else
     {
       v.refLen_ = randomValue % maxVarLen_ + 1;
-      v.seq_ = "";
+
     }
     vars.push_back(v);
     cPos += v.refLen_ + randomValue % varSpacingTarget_ + 1;

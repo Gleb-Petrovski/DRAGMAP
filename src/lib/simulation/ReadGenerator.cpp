@@ -24,26 +24,28 @@ namespace dragenos {
 namespace simulation {
 
 
-std::string ReadGenerator::extractRef(
+std::vector<unsigned char> ReadGenerator::extractRef(
     const reference::ReferenceDir7 &referenceDir,
     const reference::HashtableConfig::Sequence &s, std::uint64_t refPos,
     std::uint32_t matchLen)
 {
-  std::string ret;
   dragenos::align::Database seq;
   referenceDir.getReferenceSequence().getBases(s.seqStart + refPos,s.seqStart + refPos + matchLen, seq);
-  for (const auto b : seq) {
-    ret += referenceDir.getReferenceSequence().decodeBase(b);
-  }
-  return ret;
+
+//  for (const auto& b : seq){
+//         std::cerr << referenceDir.getReferenceSequence().decodeBase(b);
+//        }
+  return seq;
+
 }
 
-std::string ReadGenerator::generateSeq(std::uint64_t refPos, const reference::HashtableConfig::Sequence& s
+std::vector<unsigned char> ReadGenerator::generateSeq(std::uint64_t refPos, const reference::HashtableConfig::Sequence& s
     ,std::uint32_t varIdx,const Variants& vars, const reference::ReferenceDir7& referenceDir
     , std::string& cigar)
 {
   std::size_t space = readLength_;
-  std::string ret;
+  std::vector<unsigned char> ret;
+  std::vector<unsigned char> seq;
 
   while(space)
   {
@@ -62,16 +64,22 @@ std::string ReadGenerator::generateSeq(std::uint64_t refPos, const reference::Ha
     std::uint32_t matchLen =std::min<std::uint64_t>(v.refPos_ - refPos, space);
     if (matchLen)
     {
-      ret += extractRef(referenceDir, s, refPos, matchLen);
+
+      seq = extractRef(referenceDir, s, refPos, matchLen);
+      ret.insert( ret.end(), seq.begin(), seq.end() );
+
       space -= matchLen;
       refPos += matchLen;
       cigar += std::to_string(matchLen) + "M";
+
     }
-    std::uint32_t insLen = std::min(v.seq_.length(), space);
+
+    std::uint32_t insLen = std::min(v.seq_.size(), space);
+
     if (insLen)
     {
-      ret += v.seq_.substr(0,insLen);
 
+      ret.insert( ret.end(), v.seq_.begin(), v.seq_.begin() + insLen );
       space -= insLen;
 
       if(!v.refLen_)
@@ -80,7 +88,8 @@ std::string ReadGenerator::generateSeq(std::uint64_t refPos, const reference::Ha
       }
       else if (!v.seq_.empty())
       {
-        assert(v.refLen_ == v.seq_.length());
+
+        assert(v.refLen_ == v.seq_.size());
         cigar += std::to_string(insLen) + "X";
       }
     }
@@ -95,9 +104,11 @@ std::string ReadGenerator::generateSeq(std::uint64_t refPos, const reference::Ha
   std::uint32_t matchLen =std::min<std::uint64_t>(s.seqLen - refPos, space);
   if(matchLen)
   {
-    ret += extractRef(referenceDir, s, refPos, matchLen);
+    seq = extractRef(referenceDir, s, refPos, matchLen);
+    ret.insert( ret.end(), seq.begin(), seq.begin() + matchLen);
     cigar += std::to_string(matchLen) + "M";
   }
+
   return ret;
 
 }
@@ -118,8 +129,8 @@ void ReadGenerator::generateReads(const reference::HashtableConfig::Sequence& s,
   while( refPos < s.seqLen)
   {
     std::string cigar;
-    std::string readSeq;
-
+    std::vector<unsigned char> readSeq;
+    std::string readSeqString;
     while( varIdx < vars.size() && vars.at(varIdx).refEnd() <= refPos)
     {
       ++varIdx;
@@ -130,7 +141,10 @@ void ReadGenerator::generateReads(const reference::HashtableConfig::Sequence& s,
     }
     if (!insideDeletion(refPos, vars.at(varIdx))){
       readSeq = generateSeq(refPos, s, varIdx, vars, referenceDir, cigar);
-      output_.printSam(seqName,refPos,cigar, readSeq);
+      for (const auto& b : readSeq){
+        readSeqString += referenceDir.getReferenceSequence().decodeBase(b);
+      }
+      output_.printSam(seqName,refPos,cigar, readSeqString);
     }
     refPos += readSpacing_;
 
