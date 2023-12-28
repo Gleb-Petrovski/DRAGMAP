@@ -35,9 +35,9 @@ private:
       const reference::ReferenceDir7 &referenceDir,
       const reference::HashtableConfig::Sequence &s, std::uint64_t refPos,
       std::uint32_t matchLen);
-  std::vector<unsigned char> generateSeq(std::uint64_t refPos, const reference::HashtableConfig::Sequence& s
+  std::uint32_t generateSeq(std::uint64_t refPos, const reference::HashtableConfig::Sequence& s
       ,std::uint32_t varIdx,const Variants& vars, const reference::ReferenceDir7& referenceDir
-      , std::string& cigar);
+      , std::string& cigar, std::vector<unsigned char>& readSeq);
 };
 
 

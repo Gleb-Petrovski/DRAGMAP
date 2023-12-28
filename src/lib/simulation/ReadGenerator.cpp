@@ -18,7 +18,7 @@
 
 #include "align/Database.hpp"
 #include "simulation/ReadGenerator.hpp"
-
+#include "simulation/SwSimulator.hpp"
 
 namespace dragenos {
 namespace simulation {
@@ -39,14 +39,13 @@ std::vector<unsigned char> ReadGenerator::extractRef(
 
 }
 
-std::vector<unsigned char> ReadGenerator::generateSeq(std::uint64_t refPos, const reference::HashtableConfig::Sequence& s
+std::uint32_t ReadGenerator::generateSeq(std::uint64_t refPos, const reference::HashtableConfig::Sequence& s
     ,std::uint32_t varIdx,const Variants& vars, const reference::ReferenceDir7& referenceDir
-    , std::string& cigar)
+    , std::string& cigar, std::vector<unsigned char>& readSeq)
 {
   std::size_t space = readLength_;
-  std::vector<unsigned char> ret;
   std::vector<unsigned char> seq;
-
+  std::uint32_t tLen=0;
   while(space)
   {
 
@@ -66,12 +65,14 @@ std::vector<unsigned char> ReadGenerator::generateSeq(std::uint64_t refPos, cons
     {
 
       seq = extractRef(referenceDir, s, refPos, matchLen);
-      ret.insert( ret.end(), seq.begin(), seq.end() );
+      readSeq.insert( readSeq.end(), seq.begin(), seq.end() );
 
       space -= matchLen;
       refPos += matchLen;
-      cigar += std::to_string(matchLen) + "M";
 
+      for(std::uint32_t i = 0; i < matchLen; i++){
+        cigar += 'M';
+      }
     }
 
     std::uint32_t insLen = std::min(v.seq_.size(), space);
@@ -79,25 +80,34 @@ std::vector<unsigned char> ReadGenerator::generateSeq(std::uint64_t refPos, cons
     if (insLen)
     {
 
-      ret.insert( ret.end(), v.seq_.begin(), v.seq_.begin() + insLen );
+      readSeq.insert( readSeq.end(), v.seq_.begin(), v.seq_.begin() + insLen );
       space -= insLen;
 
       if(!v.refLen_)
       {
-        cigar += std::to_string(insLen) + "I";
+        for(std::uint32_t i = 0; i < insLen; i++){
+          cigar += 'I';
+        }
+
       }
       else if (!v.seq_.empty())
       {
 
         assert(v.refLen_ == v.seq_.size());
-        cigar += std::to_string(insLen) + "X";
+        for(std::uint32_t i = 0; i < insLen; i++){
+          cigar += 'M';
+        }
+
       }
     }
     if (v.seq_.empty() && space)
     {
-      cigar += std::to_string(v.refLen_) + "D";
+      for(std::uint32_t i = 0; i < v.refLen_; i++){
+        cigar += 'D';
+      }
     }
     refPos += v.refLen_;
+    tLen += v.refLen_;
     ++varIdx;
 
   }
@@ -105,11 +115,14 @@ std::vector<unsigned char> ReadGenerator::generateSeq(std::uint64_t refPos, cons
   if(matchLen)
   {
     seq = extractRef(referenceDir, s, refPos, matchLen);
-    ret.insert( ret.end(), seq.begin(), seq.begin() + matchLen);
-    cigar += std::to_string(matchLen) + "M";
+    readSeq.insert( readSeq.end(), seq.begin(), seq.begin() + matchLen);
+    for(std::uint32_t i = 0; i < matchLen; i++){
+      cigar += 'M';
+    }
+
   }
 
-  return ret;
+  return tLen;
 
 }
 
@@ -118,14 +131,41 @@ bool insideDeletion(std::uint64_t refPos, const Variant& v)
   return (v.seq_.empty() && v.refPos_ <= refPos && v.refEnd() > refPos);
 
 }
+std::string convertToString(const std::vector<unsigned char>& seq, const reference::ReferenceDir7 &referenceDir){
+  std::string ret;
+  for (const auto& b : seq){
+          ret += referenceDir.getReferenceSequence().decodeBase(b);
+        }
+  return ret;
+}
+std::string compressCigar(std::string& cigar)
+{
+  std::string res;
+    int num = 0;
+    for (std::uint32_t i = 1; i < cigar.size(); i++)
+    {
+      if (cigar.at(i) == cigar.at(i-1))
+      {
+        num++;
+      }
+      else
+      {
+        res += std::to_string(num+1) + cigar.at(i-1);
+        num = 0;
+      }
+    }
+    res += std::to_string(num +1) + cigar.at(cigar.size()-1);
+    return res;
+}
+
 
 void ReadGenerator::generateReads(const reference::HashtableConfig::Sequence& s, const reference::ReferenceDir7& referenceDir
     , const Variants& vars, const std::string& seqName)
 {
-
   std::uint64_t refPos = 0;
   std::uint32_t varIdx = 0;
-
+  std::uint32_t tLen;
+  simulation::SwSimulator sw;
   while( refPos < s.seqLen)
   {
     std::string cigar;
@@ -140,15 +180,15 @@ void ReadGenerator::generateReads(const reference::HashtableConfig::Sequence& s,
       break;
     }
     if (!insideDeletion(refPos, vars.at(varIdx))){
-      readSeq = generateSeq(refPos, s, varIdx, vars, referenceDir, cigar);
-      for (const auto& b : readSeq){
-        readSeqString += referenceDir.getReferenceSequence().decodeBase(b);
-      }
-      output_.printSam(seqName,refPos,cigar, readSeqString);
+      tLen = generateSeq(refPos, s, varIdx, vars, referenceDir, cigar, readSeq);
+      sw.runSW(readSeq, s, referenceDir,refPos, readLength_,cigar, tLen);
+      std::string string = convertToString(readSeq, referenceDir);
+      output_.printSam(seqName,refPos,cigar, string);
     }
     refPos += readSpacing_;
 
   }
+
 }
 
 
