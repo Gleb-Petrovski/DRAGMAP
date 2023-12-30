@@ -17,9 +17,6 @@
 #include "align/Database.hpp"
 #include "simulation/ReadGenerator.hpp"
 
-#include "../../include/simulation/SmithWatermanRunner.hpp"
-#include "simulation/CigarComparer.hpp"
-
 namespace dragenos {
 namespace simulation {
 
@@ -39,7 +36,7 @@ std::vector<unsigned char> ReadGenerator::extractRef(
 }
 
 std::uint32_t ReadGenerator::generateSeq(
-    std::uint64_t                               refPos,
+    std::uint64_t                               startPos,
     const reference::HashtableConfig::Sequence& s,
     std::uint32_t                               varIdx,
     const Variants&                             vars,
@@ -49,7 +46,7 @@ std::uint32_t ReadGenerator::generateSeq(
 {
   std::size_t                space = readLength_;
   std::vector<unsigned char> seq;
-  std::uint32_t              tLen = 0;
+  std::uint64_t              refPos = startPos;
   while (space) {
     while (varIdx < vars.size() && vars.at(varIdx).refPos_ < refPos) {
       ++varIdx;
@@ -66,7 +63,6 @@ std::uint32_t ReadGenerator::generateSeq(
 
       space -= matchLen;
       refPos += matchLen;
-
       for (std::uint32_t i = 0; i < matchLen; i++) {
         cigar += 'M';
       }
@@ -96,7 +92,7 @@ std::uint32_t ReadGenerator::generateSeq(
       }
     }
     refPos += v.refLen_;
-    tLen += v.refLen_;
+
     ++varIdx;
   }
   std::uint32_t matchLen = std::min<std::uint64_t>(s.seqLen - refPos, space);
@@ -108,43 +104,18 @@ std::uint32_t ReadGenerator::generateSeq(
     }
   }
 
-  return tLen;
+  return refPos - startPos;
 }
 
 bool insideDeletion(std::uint64_t refPos, const Variant& v)
 {
   return (v.seq_.empty() && v.refPos_ <= refPos && v.refEnd() > refPos);
 }
-std::string convertToString(
-    const std::vector<unsigned char>& seq, const reference::ReferenceDir7& referenceDir)
-{
-  std::string ret;
-  for (const auto& b : seq) {
-    ret += referenceDir.getReferenceSequence().decodeBase(b);
-  }
-  return ret;
-}
-std::string compressCigar(std::string& cigar)
-{
-  std::string res;
-  int         num = 0;
-  for (std::uint32_t i = 1; i < cigar.size(); i++) {
-    if (cigar.at(i) == cigar.at(i - 1)) {
-      num++;
-    } else {
-      res += std::to_string(num + 1) + cigar.at(i - 1);
-      num = 0;
-    }
-  }
-  res += std::to_string(num + 1) + cigar.at(cigar.size() - 1);
-  return res;
-}
 
 void ReadGenerator::generateReads(
     const reference::HashtableConfig::Sequence& s,
     const reference::ReferenceDir7&             referenceDir,
     const Variants&                             vars,
-    const std::string&                          seqName,
     Processor&                                  proc)
 {
   std::uint64_t refPos = 0;
@@ -162,8 +133,7 @@ void ReadGenerator::generateReads(
     if (!insideDeletion(refPos, vars.at(varIdx))) {
       std::string   cigar;
       std::uint32_t tLen = generateSeq(refPos, s, varIdx, vars, referenceDir, cigar, readSeq);
-      proc(readSeq, s, refPos, readLength_, tLen, cigar);
-      output_.printSam(seqName, refPos, cigar, readSeq);
+      proc(readSeq, s, refPos, tLen, cigar);
     }
     refPos += readSpacing_;
   }

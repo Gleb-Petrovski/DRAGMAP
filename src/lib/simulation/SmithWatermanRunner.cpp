@@ -26,7 +26,6 @@ std::string SmithWatermanRunner::runSW(
     const Query&                                query,
     const reference::HashtableConfig::Sequence& s,
     std::uint64_t                               refPos,
-    std::uint32_t                               readLength,
     std::uint32_t                               tLen) const
 {
   const short                             match    = 1;
@@ -41,7 +40,7 @@ std::string SmithWatermanRunner::runSW(
   std::uint32_t                           endBuffer = std::min<std::uint64_t>(bufferSize, s.seqLen - refPos);
   dragenos::align::Database               seq;
   referenceDir_.getReferenceSequence().getBases(
-      s.seqStart + refPos - startBuffer, s.seqStart + refPos + readLength + tLen + endBuffer, seq);
+      s.seqStart + refPos - startBuffer, s.seqStart + refPos + tLen + endBuffer, seq);
   sw.align(
       &query.front(),
       &query.front() + query.size(),

@@ -12,21 +12,38 @@
  **
  **/
 #pragma once
-#include <iostream>
-#include <vector>
+
+#include "simulation/ReadGenerator.hpp"
 
 namespace dragenos {
 namespace simulation {
 
-class SamPrinter {
+class SamPrinter : public ReadGenerator::Processor {
+  const reference::ReferenceDir7& referenceDir_;
+  std::ostream&                   os_;
+
 public:
-  std::ostream& os_;
-  SamPrinter(std::ostream& os) : os_(os) {}
+  SamPrinter(const reference::ReferenceDir7& referenceDir, std::ostream& os)
+    : referenceDir_(referenceDir), os_(os)
+  {
+  }
+  virtual void operator()(
+      const ReadGenerator::Seq&                   seq,
+      const reference::HashtableConfig::Sequence& contig,
+      const std::uint64_t                         refPos,
+      const std::uint32_t                         tLen,
+      const std::string&                          cigar) override
+  {
+    const auto& seqNames = referenceDir_.getHashtableConfig().getSequenceNames();
+    printSam(seqNames.at(contig.id_), refPos, cigar, tLen, seq);
+  }
+
   void printSam(
-      const std::string&                refName,
-      const std::uint64_t               refPos,
-      const std::string&                cigar,
-      const std::vector<unsigned char>& seq);
+      const std::string&        refName,
+      const std::uint64_t       refPos,
+      const std::string&        cigar,
+      const std::uint32_t       tLen,
+      const ReadGenerator::Seq& seq);
 
 private:
   void printQName(const std::string& seqName, const std::uint64_t refPos, const std::string& cigar);

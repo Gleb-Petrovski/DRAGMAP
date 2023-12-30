@@ -13,20 +13,18 @@
  **/
 #pragma once
 #include "reference/ReferenceDir.hpp"
-#include "simulation/SamPrinter.hpp"
 #include "simulation/Variant.hpp"
 
 namespace dragenos {
 namespace simulation {
 
 class ReadGenerator {
-  SamPrinter& output_;
-  const int   readLength_;
-  const int   readSpacing_;
+  const int readLength_;
+  const int readSpacing_;
 
 public:
-  ReadGenerator(SamPrinter& output, const int readLength, const int readSpacing)
-    : output_(output), readLength_(readLength), readSpacing_(readSpacing)
+  ReadGenerator(const int readLength, const int readSpacing)
+    : readLength_(readLength), readSpacing_(readSpacing)
   {
   }
   typedef std::vector<unsigned char> Seq;
@@ -37,7 +35,6 @@ public:
         const Seq&                                  read,
         const reference::HashtableConfig::Sequence& contig,
         std::uint64_t                               refPos,
-        std::uint32_t                               readLength,
         std::uint32_t                               tLen,
         const std::string&                          cigar) = 0;
   };
@@ -46,7 +43,6 @@ public:
       const reference::HashtableConfig::Sequence& s,
       const reference::ReferenceDir7&             referenceDir,
       const Variants&                             vars,
-      const std::string&                          seqName,
       Processor&                                  proc);
 
 private:

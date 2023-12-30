@@ -36,7 +36,6 @@ public:
       const Query&                                query,
       const reference::HashtableConfig::Sequence& contig,
       const std::uint64_t                         refPos,
-      const std::uint32_t                         readLength,
       const std::uint32_t                         tLen,
       const std::string&                          cigar) override
   {
@@ -45,7 +44,7 @@ public:
     std::string swCigar;
     histogram_.resize(100 + 1);
 
-    swCigar = runner_.runSW(query, contig, refPos, readLength, tLen);
+    swCigar = runner_.runSW(query, contig, refPos, tLen);
 
     ++histogram_.at(c.compareCigars(cigar, swCigar) * 100 / c.countMatches(cigar));
     //      if (print < 1 && c.compareCigars(cigar, swCigar) == 0){

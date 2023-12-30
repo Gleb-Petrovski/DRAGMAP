@@ -13,6 +13,8 @@
  **/
 
 #include <assert.h>
+#include <iostream>
+#include <vector>
 
 #include "reference/ReferenceSequence.hpp"
 #include "simulation/SamPrinter.hpp"
@@ -38,17 +40,36 @@ std::string convertToString(const std::vector<unsigned char>& seq)
   }
   return ret;
 }
+
+std::string packCigar(const std::string& cigar)
+{
+  std::string res;
+  int         num = 0;
+  for (std::uint32_t i = 1; i < cigar.size(); i++) {
+    if (cigar.at(i) == cigar.at(i - 1)) {
+      num++;
+    } else {
+      res += std::to_string(num + 1) + cigar.at(i - 1);
+      num = 0;
+    }
+  }
+  res += std::to_string(num + 1) + cigar.at(cigar.size() - 1);
+  return res;
+}
+
 void SamPrinter::printSam(
     const std::string&                refName,
     const std::uint64_t               refPos,
-    const std::string&                cigar,
+    const std::string&                flatCigar,
+    const std::uint32_t               tLen,
     const std::vector<unsigned char>& seq)
 {
   static constexpr std::uint32_t flag  = 2;
   static constexpr std::uint32_t mapQ  = 60;
   static constexpr char          rNext = '*';
   static constexpr std::uint32_t pNext = 0;
-  static constexpr std::uint32_t tLen  = 0;
+  const std::string              cigar = packCigar(flatCigar);
+
   printQName(refName, refPos, cigar);
   os_ << '\t' << flag << '\t' << refName << '\t' << refPos + 1 << '\t' << mapQ << '\t' << cigar << '\t'
       << rNext << '\t' << pNext << '\t' << tLen << '\t' << convertToString(seq) << '\t' << generateQual(seq)

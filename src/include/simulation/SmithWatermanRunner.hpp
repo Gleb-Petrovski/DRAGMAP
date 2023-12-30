@@ -28,7 +28,6 @@ public:
       const Query&                                query,
       const reference::HashtableConfig::Sequence& s,
       std::uint64_t                               refPos,
-      std::uint32_t                               readLength,
       std::uint32_t                               tLen) const;
 
 private:
