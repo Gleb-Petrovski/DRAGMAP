@@ -13,54 +13,51 @@
  **/
 #pragma once
 
-#include "simulation/ReadGenerator.hpp"
-#include "simulation/CigarComparer.hpp"
 #include "SmithWatermanRunner.hpp"
+#include "simulation/CigarComparer.hpp"
+#include "simulation/ReadGenerator.hpp"
 
-namespace dragenos{
-namespace simulation{
+namespace dragenos {
+namespace simulation {
 
-  class SmithWatermanValidator: public ReadGenerator::Processor {
-    const SmithWatermanRunner runner_;
-    std::vector<std::uint32_t> histogram_;
+class SmithWatermanValidator : public ReadGenerator::Processor {
+  const SmithWatermanRunner  runner_;
+  std::vector<std::uint32_t> histogram_;
 
-  public:
-    SmithWatermanValidator(const reference::ReferenceDir7 &referenceDir):runner_(referenceDir)
-    {
-
+public:
+  SmithWatermanValidator(const reference::ReferenceDir7& referenceDir) : runner_(referenceDir) {}
+  ~SmithWatermanValidator()
+  {
+    for (std::uint32_t i = 0; i < histogram_.size(); i++) {
+      std::cerr << i << ',' << histogram_.at(i) << std::endl;
     }
-    ~SmithWatermanValidator()
-    {
-      for(std::uint32_t i = 0; i < histogram_.size(); i++){
+  }
+  virtual void operator()(
+      const Query&                                query,
+      const reference::HashtableConfig::Sequence& contig,
+      const std::uint64_t                         refPos,
+      const std::uint32_t                         readLength,
+      const std::uint32_t                         tLen,
+      const std::string&                          cigar) override
+  {
+    CigarComparer c;
 
-          std::cerr << i << ',' << histogram_.at(i) << std::endl;
-        }
-    }
-    virtual void operator() (const Query& query, const reference::HashtableConfig::Sequence& contig, const std::uint64_t refPos, const std::uint32_t readLength,
-        const std::uint32_t tLen, const std::string& cigar) override
-    {
+    std::string swCigar;
+    histogram_.resize(100 + 1);
 
-      CigarComparer c;
+    swCigar = runner_.runSW(query, contig, refPos, readLength, tLen);
 
-      std::string swCigar;
-      histogram_.resize(100 + 1);
+    ++histogram_.at(c.compareCigars(cigar, swCigar) * 100 / c.countMatches(cigar));
+    //      if (print < 1 && c.compareCigars(cigar, swCigar) == 0){
+    //        std::cerr << cigar << std::endl;
+    //        std::cerr << swCigar << std::endl;
+    //        std::cerr << convertToString(readSeq, referenceDir) << std::endl;
+    //        std::cerr << convertToString(refSeq, referenceDir) <<std::endl;
+    //        std::cerr << std::endl;
+    //        ++print;
+    //      }
+  }
+};
 
-      swCigar = runner_.runSW(query, contig, refPos, readLength, tLen);
-
-
-      ++histogram_.at(c.compareCigars(cigar, swCigar) * 100 / c.countMatches(cigar));
-      //      if (print < 1 && c.compareCigars(cigar, swCigar) == 0){
-      //        std::cerr << cigar << std::endl;
-      //        std::cerr << swCigar << std::endl;
-      //        std::cerr << convertToString(readSeq, referenceDir) << std::endl;
-      //        std::cerr << convertToString(refSeq, referenceDir) <<std::endl;
-      //        std::cerr << std::endl;
-      //        ++print;
-      //      }
-
-
-    }
-  };
-
-}
-}
+}  // namespace simulation
+}  // namespace dragenos

@@ -12,24 +12,26 @@
  **
  **/
 #pragma once
-#include <vector>
 #include <iostream>
+#include <vector>
 
-namespace dragenos{
-namespace simulation{
+namespace dragenos {
+namespace simulation {
 
-class SamPrinter
-{
+class SamPrinter {
 public:
   std::ostream& os_;
-  SamPrinter(std::ostream& os):os_(os)
-  {
-  }
-  void printSam(const std::string& refName, const std::uint64_t refPos, const std::string& cigar,const std::vector<unsigned char>& seq);
+  SamPrinter(std::ostream& os) : os_(os) {}
+  void printSam(
+      const std::string&                refName,
+      const std::uint64_t               refPos,
+      const std::string&                cigar,
+      const std::vector<unsigned char>& seq);
+
 private:
-  void printQName(const std::string& seqName, const std::uint64_t refPos, const std::string& cigar );
+  void printQName(const std::string& seqName, const std::uint64_t refPos, const std::string& cigar);
   static std::string generateQual(const std::vector<unsigned char>& seq);
 };
 
-}
-}
+}  // namespace simulation
+}  // namespace dragenos

@@ -12,29 +12,23 @@
  **
  **/
 #pragma once
-#include <vector>
 #include <iostream>
+#include <vector>
 
-namespace dragenos{
-namespace simulation{
+namespace dragenos {
+namespace simulation {
 
-struct Variant
-{
-  std::uint64_t refPos_;
-  std::uint32_t refLen_;
+struct Variant {
+  std::uint64_t              refPos_;
+  std::uint32_t              refLen_;
   std::vector<unsigned char> seq_;
-  std::uint64_t refEnd() const
-  {
-    return refPos_ + refLen_;
-  }
-  friend std::ostream& operator << (std::ostream& os, const Variant& v)
+  std::uint64_t              refEnd() const { return refPos_ + refLen_; }
+  friend std::ostream&       operator<<(std::ostream& os, const Variant& v)
   {
     return os << "Variant(" << v.refPos_ << "rp " << v.refLen_ << "rl ";
   }
-
 };
 typedef std::vector<Variant> Variants;
 
-
-}
-}
+}  // namespace simulation
+}  // namespace dragenos

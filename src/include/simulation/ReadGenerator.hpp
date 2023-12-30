@@ -13,42 +13,57 @@
  **/
 #pragma once
 #include "reference/ReferenceDir.hpp"
-#include "simulation/Variant.hpp"
 #include "simulation/SamPrinter.hpp"
+#include "simulation/Variant.hpp"
 
-namespace dragenos{
-namespace simulation{
+namespace dragenos {
+namespace simulation {
 
-class ReadGenerator{
+class ReadGenerator {
   SamPrinter& output_;
-  const int readLength_;
-  const int readSpacing_;
+  const int   readLength_;
+  const int   readSpacing_;
+
 public:
-  ReadGenerator(SamPrinter& output, const int readLength, const int readSpacing):output_(output)
-  , readLength_(readLength), readSpacing_(readSpacing)
+  ReadGenerator(SamPrinter& output, const int readLength, const int readSpacing)
+    : output_(output), readLength_(readLength), readSpacing_(readSpacing)
   {
   }
   typedef std::vector<unsigned char> Seq;
 
-  struct Processor
-  {
-    virtual ~Processor(){}
-    virtual void operator() (const Seq& read, const reference::HashtableConfig::Sequence& contig,
-        std::uint64_t refPos, std::uint32_t readLength, std::uint32_t tLen, const std::string& cigar) = 0;
+  struct Processor {
+    virtual ~Processor() {}
+    virtual void operator()(
+        const Seq&                                  read,
+        const reference::HashtableConfig::Sequence& contig,
+        std::uint64_t                               refPos,
+        std::uint32_t                               readLength,
+        std::uint32_t                               tLen,
+        const std::string&                          cigar) = 0;
   };
 
-  void generateReads(const reference::HashtableConfig::Sequence& s, const reference::ReferenceDir7& referenceDir
-      , const Variants& vars,const std::string& seqName, Processor& proc);
+  void generateReads(
+      const reference::HashtableConfig::Sequence& s,
+      const reference::ReferenceDir7&             referenceDir,
+      const Variants&                             vars,
+      const std::string&                          seqName,
+      Processor&                                  proc);
+
 private:
   std::vector<unsigned char> extractRef(
-      const reference::ReferenceDir7 &referenceDir,
-      const reference::HashtableConfig::Sequence &s, std::uint64_t refPos,
-      std::uint32_t matchLen);
-  std::uint32_t generateSeq(std::uint64_t refPos, const reference::HashtableConfig::Sequence& s
-      ,std::uint32_t varIdx,const Variants& vars, const reference::ReferenceDir7& referenceDir
-      , std::string& cigar, Seq& readSeq);
+      const reference::ReferenceDir7&             referenceDir,
+      const reference::HashtableConfig::Sequence& s,
+      std::uint64_t                               refPos,
+      std::uint32_t                               matchLen);
+  std::uint32_t generateSeq(
+      std::uint64_t                               refPos,
+      const reference::HashtableConfig::Sequence& s,
+      std::uint32_t                               varIdx,
+      const Variants&                             vars,
+      const reference::ReferenceDir7&             referenceDir,
+      std::string&                                cigar,
+      Seq&                                        readSeq);
 };
 
-
-}
-}
+}  // namespace simulation
+}  // namespace dragenos

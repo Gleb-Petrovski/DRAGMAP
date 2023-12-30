@@ -13,23 +13,18 @@
  **/
 #pragma once
 
+namespace dragenos {
+namespace simulation {
 
-
-namespace dragenos{
-namespace simulation{
-
-class CigarComparer{
+class CigarComparer {
 public:
-  CigarComparer()
-  {
-  }
-  void unitTest();
+  CigarComparer() {}
+  void                 unitTest();
   static std::uint32_t compareCigars(const std::string& cigar1, const std::string& cigar2);
   static std::uint32_t countMatches(const std::string& cigar);
+
 private:
-
-
 };
 
-}
-}
+}  // namespace simulation
+}  // namespace dragenos

@@ -23,16 +23,11 @@ int main(int argc, char* argv[])
 {
   dragenos::options::DragenOsOptions opts;
   dragenos::common::parse_options(argc, argv, opts);
-  if (opts.buildHashTable_ || opts.htUncompress_)
-  {
+  if (opts.buildHashTable_ || opts.htUncompress_) {
     dragenos::common::run(dragenos::workflow::buildHashTable, opts);
-  }
-  else if(opts.simulateReads_)
-  {
+  } else if (opts.simulateReads_) {
     dragenos::common::run(dragenos::workflow::simulateReads, opts);
-  }
-  else
-  {
+  } else {
     dragenos::common::run(dragenos::workflow::input2Sam, opts);
   }
 }

@@ -12,53 +12,48 @@
  **
  **/
 
-
 #include <assert.h>
 
-
-
-#include "simulation/SamPrinter.hpp"
 #include "reference/ReferenceSequence.hpp"
-
+#include "simulation/SamPrinter.hpp"
 
 namespace dragenos {
 namespace simulation {
 
-void SamPrinter::printQName(const std::string& seqName, const std::uint64_t refPos, const std::string& cigar )
+void SamPrinter::printQName(const std::string& seqName, const std::uint64_t refPos, const std::string& cigar)
 {
-   os_ << seqName << ':' << refPos + 1 << ':' << cigar;
-
+  os_ << seqName << ':' << refPos + 1 << ':' << cigar;
 }
 std::string SamPrinter::generateQual(const std::vector<unsigned char>& seq)
 {
-  std::string ret (seq.size(), 'F');
+  std::string ret(seq.size(), 'F');
 
   return ret;
 }
 std::string convertToString(const std::vector<unsigned char>& seq)
 {
   std::string ret;
-  for (const auto& b : seq)
-  {
+  for (const auto& b : seq) {
     ret += reference::ReferenceSequence::decodeBase(b);
   }
   return ret;
 }
-void SamPrinter::printSam(const std::string& refName, const std::uint64_t refPos, const std::string& cigar,const std::vector<unsigned char>& seq)
+void SamPrinter::printSam(
+    const std::string&                refName,
+    const std::uint64_t               refPos,
+    const std::string&                cigar,
+    const std::vector<unsigned char>& seq)
 {
-  static constexpr std::uint32_t flag = 2;
-  static constexpr std::uint32_t mapQ = 60;
-  static constexpr char rNext = '*';
+  static constexpr std::uint32_t flag  = 2;
+  static constexpr std::uint32_t mapQ  = 60;
+  static constexpr char          rNext = '*';
   static constexpr std::uint32_t pNext = 0;
-  static constexpr std::uint32_t tLen = 0;
+  static constexpr std::uint32_t tLen  = 0;
   printQName(refName, refPos, cigar);
-  os_ << '\t' << flag << '\t' << refName << '\t' << refPos + 1 << '\t' << mapQ << '\t' << cigar << '\t' << rNext << '\t'
-      << pNext << '\t' << tLen << '\t' << convertToString(seq) << '\t' << generateQual(seq) << '\n';
-
+  os_ << '\t' << flag << '\t' << refName << '\t' << refPos + 1 << '\t' << mapQ << '\t' << cigar << '\t'
+      << rNext << '\t' << pNext << '\t' << tLen << '\t' << convertToString(seq) << '\t' << generateQual(seq)
+      << '\n';
 }
-
 
 }  // namespace simulation
 }  // namespace dragenos
-
-

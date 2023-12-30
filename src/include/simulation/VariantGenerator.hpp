@@ -14,21 +14,21 @@
 #pragma once
 
 #include "simulation/Variant.hpp"
-namespace dragenos{
-namespace simulation{
+namespace dragenos {
+namespace simulation {
 
-class VariantGenerator{
+class VariantGenerator {
 public:
   const int maxVarLen_;
   const int varSpacingTarget_;
-  VariantGenerator(const int maxVarLen,  const int varSpacingTarget):maxVarLen_(maxVarLen), varSpacingTarget_(varSpacingTarget)
+  VariantGenerator(const int maxVarLen, const int varSpacingTarget)
+    : maxVarLen_(maxVarLen), varSpacingTarget_(varSpacingTarget)
   {
-
   }
   Variants generateVariants(std::uint32_t beginPos, std::uint32_t endPos);
-private:
 
+private:
 };
 
-}
-}
+}  // namespace simulation
+}  // namespace dragenos

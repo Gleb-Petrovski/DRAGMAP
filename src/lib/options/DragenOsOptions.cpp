@@ -64,21 +64,25 @@ DragenOsOptions::DragenOsOptions() : refDir_("./"), inputFile1_(""), inputFile2_
       //("mapper_cigar"   , bpo::value<bool>(&mapperCigar_),
       //        "no real alignment, produces alignment information based on seed chains only -- dragen
       //        legacy")
-      ("Simulate.max-var-len", bpo::value<int>(&maxVarLen_)->default_value(maxVarLen_),
-            "set maximum length of a variant")
-      ("Simulate.var-spacing-target", bpo::value<int>(&varSpacingTarget_)->default_value(varSpacingTarget_),
-            "set max spacing between variants")
-      ("Simulate.read-length", bpo::value<int>(&readLength_)->default_value(readLength_),
-            "set read length of simulated reads")
-      ("Simulate.read-spacing", bpo::value<int>(&readSpacing_)->default_value(readSpacing_),
-            "set step between reads")
-      ("simulate-reads", bpo::value<bool>(&simulateReads_)->default_value(simulateReads_),
-	          "Use reference sequence to produce simulated reads according to parameters of the simulation")
-      ("mmap-reference",
-       bpo::value<bool>(&mmapReference_)->default_value(mmapReference_),
-       "memory-map reference data instead of pre-loading. This allows for quicker runs when only a "
-       "handful of reads need to be aligned")
-	   (
+      ("Simulate.max-var-len",
+       bpo::value<int>(&maxVarLen_)->default_value(maxVarLen_),
+       "set maximum length of a variant")(
+          "Simulate.var-spacing-target",
+          bpo::value<int>(&varSpacingTarget_)->default_value(varSpacingTarget_),
+          "set max spacing between variants")(
+          "Simulate.read-length",
+          bpo::value<int>(&readLength_)->default_value(readLength_),
+          "set read length of simulated reads")(
+          "Simulate.read-spacing",
+          bpo::value<int>(&readSpacing_)->default_value(readSpacing_),
+          "set step between reads")(
+          "simulate-reads",
+          bpo::value<bool>(&simulateReads_)->default_value(simulateReads_),
+          "Use reference sequence to produce simulated reads according to parameters of the simulation")(
+          "mmap-reference",
+          bpo::value<bool>(&mmapReference_)->default_value(mmapReference_),
+          "memory-map reference data instead of pre-loading. This allows for quicker runs when only a "
+          "handful of reads need to be aligned")(
           "RGID", bpo::value<std::string>(&rgid_)->default_value(rgid_), "Read Group ID")(
           "RGSM", bpo::value<std::string>(&rgsm_)->default_value(rgsm_), "Read Group Sample")(
           "output-directory",

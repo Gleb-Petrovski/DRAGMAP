@@ -16,21 +16,23 @@
 #include <vector>
 #include "reference/ReferenceDir.hpp"
 
-namespace dragenos{
-namespace simulation{
+namespace dragenos {
+namespace simulation {
 typedef std::vector<unsigned char> Query;
-class SmithWatermanRunner{
-  const reference::ReferenceDir7 &referenceDir_;
+class SmithWatermanRunner {
+  const reference::ReferenceDir7& referenceDir_;
+
 public:
+  SmithWatermanRunner(const reference::ReferenceDir7& referenceDir) : referenceDir_(referenceDir) {}
+  std::string runSW(
+      const Query&                                query,
+      const reference::HashtableConfig::Sequence& s,
+      std::uint64_t                               refPos,
+      std::uint32_t                               readLength,
+      std::uint32_t                               tLen) const;
 
-  SmithWatermanRunner(const reference::ReferenceDir7& referenceDir):referenceDir_(referenceDir)
-  {
-
-  }
-  std::string runSW(const Query& query, const reference::HashtableConfig::Sequence& s, std::uint64_t refPos, std::uint32_t readLength, std::uint32_t tLen) const;
 private:
-
 };
 
-}
-}
+}  // namespace simulation
+}  // namespace dragenos
