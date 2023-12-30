@@ -12,23 +12,23 @@
  **
  **/
 #pragma once
-#include <vector>
-#include <iostream>
+
+
 
 namespace dragenos{
 namespace simulation{
 
-class SamPrinter
-{
+class CigarComparer{
 public:
-  std::ostream& os_;
-  SamPrinter(std::ostream& os):os_(os)
+  CigarComparer()
   {
   }
-  void printSam(const std::string& refName, const std::uint64_t refPos, const std::string& cigar,const std::vector<unsigned char>& seq);
+  void unitTest();
+  static std::uint32_t compareCigars(const std::string& cigar1, const std::string& cigar2);
+  static std::uint32_t countMatches(const std::string& cigar);
 private:
-  void printQName(const std::string& seqName, const std::uint64_t refPos, const std::string& cigar );
-  static std::string generateQual(const std::vector<unsigned char>& seq);
+
+
 };
 
 }

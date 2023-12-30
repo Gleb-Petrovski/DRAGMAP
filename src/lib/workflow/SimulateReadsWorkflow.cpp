@@ -17,13 +17,12 @@
 #include "simulation/ReadGenerator.hpp"
 #include "simulation/VariantGenerator.hpp"
 #include "sam/SamGenerator.hpp"
+#include "simulation/SmithWatermanValidator.hpp"
 
 
 namespace dragenos {
+
 namespace workflow {
-
-
-
 void simulateReads(const dragenos::options::DragenOsOptions& options)
 {
   if (!options.simulateReads_) {
@@ -53,7 +52,7 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
   sam::SamGenerator::generateHeader(
       samFile, referenceDir.getHashtableConfig(), options.getCommandLine(), options.rgid_, options.rgsm_);
 
-
+  simulation::SmithWatermanValidator validator(referenceDir);
   simulation::SamPrinter output(samFile);
   simulation::ReadGenerator rGen(output, options.readLength_, options.readSpacing_);
   simulation::VariantGenerator vGen(options.maxVarLen_, options.varSpacingTarget_);
@@ -62,9 +61,10 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
   const auto& seqNames = referenceDir.getHashtableConfig().getSequenceNames();
   for (const auto& s : seqs){
     const auto vars = vGen.generateVariants(0, s.seqLen);
-    rGen.generateReads(s, referenceDir, vars, seqNames.at(s.id_));
+    rGen.generateReads(s, referenceDir, vars, seqNames.at(s.id_), validator);
 
   }
+
 
 }
 

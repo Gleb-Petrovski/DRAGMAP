@@ -18,7 +18,9 @@
 
 #include "align/Database.hpp"
 #include "simulation/ReadGenerator.hpp"
-#include "simulation/SwSimulator.hpp"
+
+#include "../../include/simulation/SmithWatermanRunner.hpp"
+#include "simulation/CigarComparer.hpp"
 
 namespace dragenos {
 namespace simulation {
@@ -134,8 +136,8 @@ bool insideDeletion(std::uint64_t refPos, const Variant& v)
 std::string convertToString(const std::vector<unsigned char>& seq, const reference::ReferenceDir7 &referenceDir){
   std::string ret;
   for (const auto& b : seq){
-          ret += referenceDir.getReferenceSequence().decodeBase(b);
-        }
+    ret += referenceDir.getReferenceSequence().decodeBase(b);
+  }
   return ret;
 }
 std::string compressCigar(std::string& cigar)
@@ -160,16 +162,14 @@ std::string compressCigar(std::string& cigar)
 
 
 void ReadGenerator::generateReads(const reference::HashtableConfig::Sequence& s, const reference::ReferenceDir7& referenceDir
-    , const Variants& vars, const std::string& seqName)
+    , const Variants& vars, const std::string& seqName, Processor& proc)
 {
   std::uint64_t refPos = 0;
   std::uint32_t varIdx = 0;
-  std::uint32_t tLen;
-  simulation::SwSimulator sw;
+
   while( refPos < s.seqLen)
   {
-    std::string cigar;
-    std::vector<unsigned char> readSeq;
+    Seq readSeq;
     std::string readSeqString;
     while( varIdx < vars.size() && vars.at(varIdx).refEnd() <= refPos)
     {
@@ -180,10 +180,10 @@ void ReadGenerator::generateReads(const reference::HashtableConfig::Sequence& s,
       break;
     }
     if (!insideDeletion(refPos, vars.at(varIdx))){
-      tLen = generateSeq(refPos, s, varIdx, vars, referenceDir, cigar, readSeq);
-      sw.runSW(readSeq, s, referenceDir,refPos, readLength_,cigar, tLen);
-      std::string string = convertToString(readSeq, referenceDir);
-      output_.printSam(seqName,refPos,cigar, string);
+      std::string cigar;
+      std::uint32_t tLen = generateSeq(refPos, s, varIdx, vars, referenceDir, cigar, readSeq);
+      proc(readSeq, s, refPos, readLength_, tLen, cigar);
+      output_.printSam(seqName,refPos,cigar, readSeq);
     }
     refPos += readSpacing_;
 

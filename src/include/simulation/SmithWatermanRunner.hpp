@@ -14,22 +14,22 @@
 #pragma once
 
 #include <vector>
-#include "simulation/SwSimulator.hpp"
 #include "reference/ReferenceDir.hpp"
 
 namespace dragenos{
 namespace simulation{
-
-class SwSimulator{
+typedef std::vector<unsigned char> Query;
+class SmithWatermanRunner{
+  const reference::ReferenceDir7 &referenceDir_;
 public:
-  SwSimulator()
+
+  SmithWatermanRunner(const reference::ReferenceDir7& referenceDir):referenceDir_(referenceDir)
   {
 
   }
-  void runSW(const std::vector<unsigned char>& read, const reference::HashtableConfig::Sequence& s, const reference::ReferenceDir7 &referenceDir
-      , std::uint64_t refPos, std::uint32_t readLength,std::string& cigar, std::uint32_t tLen);
+  std::string runSW(const Query& query, const reference::HashtableConfig::Sequence& s, std::uint64_t refPos, std::uint32_t readLength, std::uint32_t tLen) const;
 private:
-  std::string convertToString(const std::vector<unsigned char>& seq, const reference::ReferenceDir7 &referenceDir);
+
 };
 
 }
