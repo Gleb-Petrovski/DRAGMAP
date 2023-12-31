@@ -84,6 +84,7 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
       const auto vars = vGen.generateVariants(0, s.seqLen);
       rGen.generateReads(s, referenceDir, vars, validator);
     }
+    validator.printResults();
   }
 }
 
