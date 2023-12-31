@@ -26,8 +26,7 @@ struct Cursor {
   std::uint32_t readPos  = 0;
 };
 
-
-void        moveCounter(Cursor& a, const std::string& cigar)
+void moveCounter(Cursor& a, const std::string& cigar)
 {
   char c = cigar.at(a.cigarPos);
   if (c != 'N' && c != 'D') {
@@ -50,13 +49,17 @@ std::uint32_t CigarComparer::countMatches(const std::string& cigar)
   return ret;
 }
 
-std::uint32_t CigarComparer::compareCigars(const std::string& cigar1, const std::string& cigar2, const std::uint64_t refPos1, const std::uint64_t refPos2)
+std::uint32_t CigarComparer::compareCigars(
+    const std::string&  cigar1,
+    const std::string&  cigar2,
+    const std::uint64_t refPos1,
+    const std::uint64_t refPos2)
 {
   Cursor        a;
   Cursor        b;
   std::uint32_t fidelity = 0;
-  a.refPos = refPos1;
-  b.refPos = refPos2;
+  a.refPos               = refPos1;
+  b.refPos               = refPos2;
   while (a.cigarPos != cigar1.length() && b.cigarPos != cigar2.length()) {
     //std::cerr << a.readPos << ':' << a.refPos << ':' <<cigar1.at(a.cigarPos) << '\t' << b.readPos << ':' << b.refPos << ':' << cigar2.at(b.cigarPos) <<std::endl;
     if (cigar1.at(a.cigarPos) != 'M') {

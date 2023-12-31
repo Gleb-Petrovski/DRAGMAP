@@ -31,9 +31,9 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
   const reference::ReferenceDir7 referenceDir(
       options.refDir_, options.mmapReference_, options.loadReference_);
 
-  simulation::ReadGenerator          rGen(options.readLength_, options.readSpacing_);
-  simulation::VariantGenerator       vGen(options.maxVarLen_, options.varSpacingTarget_);
-  std::ofstream os;
+  simulation::ReadGenerator    rGen(options.readLength_, options.readSpacing_);
+  simulation::VariantGenerator vGen(options.maxVarLen_, options.varSpacingTarget_);
+  std::ofstream                os;
 
   namespace bfs = boost::filesystem;
   if (!options.outputDirectory_.empty()) {
@@ -41,8 +41,9 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
       BOOST_THROW_EXCEPTION(common::IoException(
           ENOENT, std::string("Output directory does not exist: ") + options.outputDirectory_));
     }
-    if (options.generateSam_){
-      const auto filePath = bfs::path(options.outputDirectory_) / (options.outputFilePrefix_ + "Generated" + ".sam");
+    if (options.generateSam_) {
+      const auto filePath =
+          bfs::path(options.outputDirectory_) / (options.outputFilePrefix_ + "Generated" + ".sam");
       os.open(filePath.c_str());
       if (!os) {
         BOOST_THROW_EXCEPTION(common::IoException(
@@ -51,9 +52,9 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
       if (options.verbose_) {
         std::cerr << "INFO: writing SAM file to " << filePath << std::endl;
       }
-    }
-    else if (options.validate_){
-      const auto filePath = bfs::path(options.outputDirectory_) / (options.outputFilePrefix_ + "SmithWatermanFidelity" + ".csv");
+    } else if (options.validate_) {
+      const auto filePath = bfs::path(options.outputDirectory_) /
+                            (options.outputFilePrefix_ + "SmithWatermanFidelity" + ".csv");
       os.open(filePath.c_str());
       if (!os) {
         BOOST_THROW_EXCEPTION(common::IoException(
@@ -64,20 +65,20 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
       }
     }
   }
-  if (options.generateSam_){
+  if (options.generateSam_) {
     std::ostream& samFile = os.is_open() ? os : std::cout;
     sam::SamGenerator::generateHeader(
         samFile, referenceDir.getHashtableConfig(), options.getCommandLine(), options.rgid_, options.rgsm_);
     simulation::SamPrinter samOutput(referenceDir, samFile);
-    const auto& seqs = referenceDir.getHashtableConfig().getSequences();
+    const auto&            seqs = referenceDir.getHashtableConfig().getSequences();
     for (const auto& s : seqs) {
       const auto vars = vGen.generateVariants(0, s.seqLen);
       rGen.generateReads(s, referenceDir, vars, samOutput);
     }
-  }
-  else if(options.validate_){
-    std::ostream& csvFile = os.is_open() ? os : std::cout;
-    simulation::SmithWatermanValidator validator(referenceDir, options.startFlank_ , options.endFlank_, csvFile);
+  } else if (options.validate_) {
+    std::ostream&                      csvFile = os.is_open() ? os : std::cout;
+    simulation::SmithWatermanValidator validator(
+        referenceDir, options.startFlank_, options.endFlank_, csvFile);
     const auto& seqs = referenceDir.getHashtableConfig().getSequences();
     for (const auto& s : seqs) {
       const auto vars = vGen.generateVariants(0, s.seqLen);

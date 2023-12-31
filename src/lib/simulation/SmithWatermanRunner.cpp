@@ -33,13 +33,13 @@ std::string SmithWatermanRunner::runSW(
   const short                             match    = 1;
   const short                             mismatch = -1;
   const dragenos::align::SimilarityScores similarityScores(match, mismatch);
-  const int                               gapInit    = 2;
-  const int                               gapExtend  = 1;
+  const int                               gapInit   = 2;
+  const int                               gapExtend = 1;
 
-  align::SmithWaterman                    sw(similarityScores, gapInit, gapExtend);
-  std::string                             result;
+  align::SmithWaterman sw(similarityScores, gapInit, gapExtend);
+  std::string          result;
 
-  dragenos::align::Database               seq;
+  dragenos::align::Database seq;
   referenceDir_.getReferenceSequence().getBases(s.seqStart + start, s.seqStart + end, seq);
   sw.align(
       &query.front(),
