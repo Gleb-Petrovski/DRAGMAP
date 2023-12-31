@@ -20,7 +20,7 @@ class CigarComparer {
 public:
   CigarComparer() {}
   void                 unitTest();
-  static std::uint32_t compareCigars(const std::string& cigar1, const std::string& cigar2);
+  static std::uint32_t compareCigars(const std::string& cigar1, const std::string& cigar2, const std::uint64_t refPos1, const std::uint64_t refPos2);
   static std::uint32_t countMatches(const std::string& cigar);
 
 private:

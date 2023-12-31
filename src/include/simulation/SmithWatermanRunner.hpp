@@ -27,6 +27,8 @@ public:
   std::string runSW(
       const Query&                                query,
       const reference::HashtableConfig::Sequence& s,
+      const std::uint32_t                         start,
+      const std::uint32_t                         end,
       std::uint64_t                               refPos,
       std::uint32_t                               tLen) const;
 

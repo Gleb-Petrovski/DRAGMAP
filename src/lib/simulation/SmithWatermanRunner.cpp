@@ -25,6 +25,8 @@ namespace simulation {
 std::string SmithWatermanRunner::runSW(
     const Query&                                query,
     const reference::HashtableConfig::Sequence& s,
+    const std::uint32_t                         start,
+    const std::uint32_t                         end,
     std::uint64_t                               refPos,
     std::uint32_t                               tLen) const
 {
@@ -33,14 +35,12 @@ std::string SmithWatermanRunner::runSW(
   const dragenos::align::SimilarityScores similarityScores(match, mismatch);
   const int                               gapInit    = 2;
   const int                               gapExtend  = 1;
-  const std::uint32_t                     bufferSize = 0;
+
   align::SmithWaterman                    sw(similarityScores, gapInit, gapExtend);
   std::string                             result;
-  std::uint32_t                           startBuffer = std::min<std::uint64_t>(bufferSize, refPos);
-  std::uint32_t                           endBuffer = std::min<std::uint64_t>(bufferSize, s.seqLen - refPos);
+
   dragenos::align::Database               seq;
-  referenceDir_.getReferenceSequence().getBases(
-      s.seqStart + refPos - startBuffer, s.seqStart + refPos + tLen + endBuffer, seq);
+  referenceDir_.getReferenceSequence().getBases(s.seqStart + start, s.seqStart + end, seq);
   sw.align(
       &query.front(),
       &query.front() + query.size(),

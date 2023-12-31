@@ -64,6 +64,18 @@ DragenOsOptions::DragenOsOptions() : refDir_("./"), inputFile1_(""), inputFile2_
       //("mapper_cigar"   , bpo::value<bool>(&mapperCigar_),
       //        "no real alignment, produces alignment information based on seed chains only -- dragen
       //        legacy")
+      ("Simulate.generate-sam",
+                   bpo::value<bool>(&generateSam_)->default_value(generateSam_),
+                   "generate sam file from simulated reads")
+            ("Simulate.validate",
+                   bpo::value<bool>(&validate_)->default_value(validate_),
+                   "generate csv file from sw histogram output")
+      ("Simulate.start-flank",
+             bpo::value<int>(&startFlank_)->default_value(startFlank_),
+             "set flank at start of smith waterman")
+      ("Simulate.end-flank",
+             bpo::value<int>(&endFlank_)->default_value(endFlank_),
+             "set flank at end of smith waterman")
       ("Simulate.max-var-len",
        bpo::value<int>(&maxVarLen_)->default_value(maxVarLen_),
        "set maximum length of a variant")(
@@ -335,7 +347,7 @@ void DragenOsOptions::postProcess(bpo::variables_map& vm)
     return;
   }
 
-  if (buildHashTable_ || htUncompress_) {
+  if (buildHashTable_ || htUncompress_ || simulateReads_) {
     return;
   }
 

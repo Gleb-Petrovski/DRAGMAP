@@ -22,14 +22,18 @@ namespace simulation {
 
 class SmithWatermanValidator : public ReadGenerator::Processor {
   const SmithWatermanRunner  runner_;
+  const std::uint32_t flankSizeStart_;
+  const std::uint32_t flankSizeEnd_;
+  std::ostream&  output_;
   std::vector<std::uint32_t> histogram_;
 
 public:
-  SmithWatermanValidator(const reference::ReferenceDir7& referenceDir) : runner_(referenceDir) {}
+  SmithWatermanValidator(const reference::ReferenceDir7& referenceDir, const uint32_t flankSizeStart, const uint32_t flankSizeEnd, std::ostream& output) :
+    runner_(referenceDir), flankSizeStart_(flankSizeStart), flankSizeEnd_(flankSizeEnd), output_(output) {}
   ~SmithWatermanValidator()
   {
     for (std::uint32_t i = 0; i < histogram_.size(); i++) {
-      std::cerr << i << ',' << histogram_.at(i) << std::endl;
+      output_ << i << ',' << histogram_.at(i) << '\n';
     }
   }
   virtual void operator()(
@@ -40,13 +44,15 @@ public:
       const std::string&                          cigar) override
   {
     CigarComparer c;
-
     std::string swCigar;
     histogram_.resize(100 + 1);
 
-    swCigar = runner_.runSW(query, contig, refPos, tLen);
+    std::uint32_t                           start = std::max<std::int64_t>(0, refPos - flankSizeStart_);
+    std::uint32_t                           end = std::min<std::uint64_t>(contig.seqLen, refPos + flankSizeEnd_ + tLen);
 
-    ++histogram_.at(c.compareCigars(cigar, swCigar) * 100 / c.countMatches(cigar));
+    swCigar = runner_.runSW(query, contig, start, end, refPos, tLen);
+
+    ++histogram_.at(c.compareCigars(cigar, swCigar, refPos, start ) * 100 / c.countMatches(cigar));
     //      if (print < 1 && c.compareCigars(cigar, swCigar) == 0){
     //        std::cerr << cigar << std::endl;
     //        std::cerr << swCigar << std::endl;

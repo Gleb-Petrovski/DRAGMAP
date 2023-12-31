@@ -36,6 +36,10 @@ private:
   void        SetBuildHashTableOptions(hashTableConfig_t* config, HashTableType hashTableType);
 
 public:
+  bool                    validate_      = false;
+  bool                    generateSam_      = false;
+  int                     endFlank_         = 48*2+1;
+  int                     startFlank_       = 48+1;
   int                     readSpacing_      = 5;
   int                     readLength_       = 50;
   int                     maxVarLen_        = 8;
