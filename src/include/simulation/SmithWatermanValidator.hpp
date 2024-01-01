@@ -33,10 +33,11 @@ public:
       const uint32_t                  flankSizeStart,
       const uint32_t                  flankSizeEnd,
       std::ostream&                   output)
-    : runner_(referenceDir), flankSizeStart_(flankSizeStart), flankSizeEnd_(flankSizeEnd), output_(output)
+    : runner_(referenceDir), flankSizeStart_(flankSizeStart), flankSizeEnd_(flankSizeEnd), output_(output), histogram_(100 + 1)
   {
   }
   void printResults();
+  void merge(const SmithWatermanValidator& that);
 
   void validate(
       const std::uint8_t*                         queryStart,

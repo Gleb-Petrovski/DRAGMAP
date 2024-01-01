@@ -56,6 +56,8 @@ void ValidatorThread::runValidator()
   if (!block.empty()) {
     validateBlock(block);
   }
+  std::unique_lock lk(m_);
+  validatorMaster_.merge(validator_);
 }
 
 }  // namespace simulation

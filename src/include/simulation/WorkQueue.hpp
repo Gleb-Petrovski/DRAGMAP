@@ -25,7 +25,6 @@ class WorkQueue {
   std::mutex                m_;
   std::condition_variable   cv_;
   bool                      ready_     = false;
-  bool                      processed_ = false;
   bool                      lastBlock_ = false;
 
 public:

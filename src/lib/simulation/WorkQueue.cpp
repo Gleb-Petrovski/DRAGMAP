@@ -32,7 +32,7 @@ bool WorkQueue::getBlock(std::vector<std::uint8_t>& block)
   // Manual unlocking is done before notifying, to avoid waking up
   // the waiting thread only to block again (see notify_one for details)
   lk.unlock();
-  cv_.notify_one();
+  cv_.notify_all();
 
   return ret;
 }

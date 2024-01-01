@@ -84,16 +84,23 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
         referenceDir, options.startFlank_, options.endFlank_, csvFile);
     simulation::WorkQueue       workQueue;
     simulation::ReadPackager    packager(50, workQueue);
-    simulation::ValidatorThread worker(validator, options.readLength_, workQueue);
-    std::thread                 thread1(worker);
+    std::mutex m;
+    simulation::ValidatorThread worker(validator, options.readLength_, workQueue, m);
+    //std::thread thread(worker);
 
+    std::vector<std::thread>                 threads;//(std::thread::hardware_concurrency(),thread);
+    for (unsigned i = 0 ; i <std::thread::hardware_concurrency(); ++i){
+      threads.push_back(std::thread(worker));
+    }
     const auto& seqs = referenceDir.getHashtableConfig().getSequences();
     for (const auto& s : seqs) {
       const auto vars = vGen.generateVariants(0, s.seqLen);
       rGen.generateReads(s, referenceDir, vars, packager);
     }
     packager.flush();
-    thread1.join();
+    for ( auto& t: threads){
+      t.join();
+    }
     validator.printResults();
   }
 }

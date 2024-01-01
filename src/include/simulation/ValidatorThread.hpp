@@ -20,16 +20,18 @@ namespace dragenos {
 namespace simulation {
 
 class ValidatorThread {
-  SmithWatermanValidator& validator_;
+  SmithWatermanValidator validator_;
+  SmithWatermanValidator& validatorMaster_;
   const std::uint32_t     readLength_;
   WorkQueue&              workQueue_;
+  std::mutex&              m_;
 
   const char* validateOne(const std::vector<std::uint8_t>& block, const char* pCigarEnd);
   void        validateBlock(const std::vector<std::uint8_t>& block);
 
 public:
-  ValidatorThread(SmithWatermanValidator& validator, const std::uint32_t readLength, WorkQueue& workQueue)
-    : validator_(validator), readLength_(readLength), workQueue_(workQueue)
+  ValidatorThread(SmithWatermanValidator& validator, const std::uint32_t readLength, WorkQueue& workQueue, std::mutex& m)
+    : validator_(validator), validatorMaster_(validator), readLength_(readLength), workQueue_(workQueue), m_(m)
   {
   }
   void operator()() { runValidator(); }

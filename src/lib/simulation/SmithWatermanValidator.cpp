@@ -25,6 +25,12 @@ void SmithWatermanValidator::printResults()
   }
 }
 
+void SmithWatermanValidator::merge(const SmithWatermanValidator& that){
+  assert(that.histogram_.size() == histogram_.size());
+  for (std::uint32_t i = 0; i < histogram_.size(); i++ ){
+    histogram_[i] += that.histogram_[i];
+  }
+}
 void SmithWatermanValidator::validate(
     const std::uint8_t*                         queryStart,
     const std::uint8_t*                         queryEnd,
@@ -35,7 +41,7 @@ void SmithWatermanValidator::validate(
 {
   CigarComparer c;
   std::string   swCigar;
-  histogram_.resize(100 + 1);
+
 
   std::uint32_t start = std::max<std::int64_t>(0, refPos - flankSizeStart_);
   std::uint32_t end   = std::min<std::uint64_t>(contig.seqLen, refPos + flankSizeEnd_ + tLen);
