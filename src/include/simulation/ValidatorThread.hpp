@@ -12,28 +12,30 @@
  **
  **/
 #pragma once
-#include <condition_variable>
-#include <mutex>
+
 
 #include "simulation/SmithWatermanValidator.hpp"
+#include "simulation/WorkQueue.hpp"
 
 namespace dragenos {
 namespace simulation {
 
-class WorkQueue{
-  std::vector<std::uint8_t> block_;
-  std::mutex m_;
-  std::condition_variable cv_;
-  bool ready_ = false;
-  bool processed_ = false;
-  bool lastBlock_ = false;
+class ValidatorThread{
+  SmithWatermanValidator& validator_;
+  const std::uint32_t readLength_;
+  WorkQueue& workQueue_;
 
+  const char* validateOne(std::vector<std::uint8_t>& block, const char* pCigarEnd);
+  void validateBlock(std::vector<std::uint8_t>& block);
 public:
-  WorkQueue()
+  ValidatorThread(SmithWatermanValidator& validator, const std::uint32_t readLength, WorkQueue& workQueue):validator_(validator), readLength_(readLength), workQueue_(workQueue)
   {
   }
-  void acceptBlock(std::vector<std::uint8_t>& block, bool lastBlock);
-  bool getBlock(std::vector<std::uint8_t>& block);
+  void operator()()
+  {
+    runValidator();
+  }
+  void runValidator();
 };
 
 }  // namespace simulation

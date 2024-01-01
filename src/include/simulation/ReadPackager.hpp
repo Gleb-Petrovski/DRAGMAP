@@ -22,7 +22,7 @@ namespace simulation {
 
 class ReadPackager : public ReadGenerator::Processor {
   const std::uint32_t readsPerBlock_;
-  WorkQueue workQueue_;
+  WorkQueue& workQueue_;
   std::vector<unsigned char> block_;
   std::uint32_t readsIn_ = 0;
 

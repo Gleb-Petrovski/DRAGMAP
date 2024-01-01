@@ -21,6 +21,7 @@
 #include "simulation/VariantGenerator.hpp"
 #include "simulation/ReadPackager.hpp"
 #include "simulation/WorkQueue.hpp"
+#include "simulation/ValidatorThread.hpp"
 
 namespace dragenos {
 
@@ -81,15 +82,18 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
     std::ostream&                      csvFile = os.is_open() ? os : std::cout;
     simulation::SmithWatermanValidator validator(
         referenceDir, options.startFlank_, options.endFlank_, csvFile);
-    simulation::WorkQueue workQueue(validator, options.readLength_);
+    simulation::WorkQueue workQueue;
     simulation::ReadPackager packager(50, workQueue);
+    simulation::ValidatorThread worker(validator, options.readLength_, workQueue);
+    std::thread thread1 (worker);
 
     const auto& seqs = referenceDir.getHashtableConfig().getSequences();
     for (const auto& s : seqs) {
       const auto vars = vGen.generateVariants(0, s.seqLen);
       rGen.generateReads(s, referenceDir, vars, packager);
-      packager.flush();
     }
+    packager.flush();
+    thread1.join();
     validator.printResults();
   }
 }

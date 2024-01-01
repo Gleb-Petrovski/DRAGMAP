@@ -21,7 +21,7 @@ namespace dragenos {
 namespace simulation {
 
 void ReadPackager::flush(){
-  workQueue_.acceptBlock(block_);
+  workQueue_.acceptBlock(block_, true);
   block_.clear();
   readsIn_ = 0;
 }
@@ -41,7 +41,8 @@ void ReadPackager::operator()(
     block_.insert(block_.end(), cigar.begin(), cigar.end());
     ++readsIn_;
     if (readsIn_ == readsPerBlock_){
-      workQueue_.acceptBlock(block_);
+      assert(!block_.empty());
+      workQueue_.acceptBlock(block_, false);
       block_.clear();
       readsIn_ = 0;
     }
