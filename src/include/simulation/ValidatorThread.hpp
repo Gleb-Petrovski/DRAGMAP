@@ -13,28 +13,26 @@
  **/
 #pragma once
 
-
 #include "simulation/SmithWatermanValidator.hpp"
 #include "simulation/WorkQueue.hpp"
 
 namespace dragenos {
 namespace simulation {
 
-class ValidatorThread{
+class ValidatorThread {
   SmithWatermanValidator& validator_;
-  const std::uint32_t readLength_;
-  WorkQueue& workQueue_;
+  const std::uint32_t     readLength_;
+  WorkQueue&              workQueue_;
 
-  const char* validateOne(std::vector<std::uint8_t>& block, const char* pCigarEnd);
-  void validateBlock(std::vector<std::uint8_t>& block);
+  const char* validateOne(const std::vector<std::uint8_t>& block, const char* pCigarEnd);
+  void        validateBlock(const std::vector<std::uint8_t>& block);
+
 public:
-  ValidatorThread(SmithWatermanValidator& validator, const std::uint32_t readLength, WorkQueue& workQueue):validator_(validator), readLength_(readLength), workQueue_(workQueue)
+  ValidatorThread(SmithWatermanValidator& validator, const std::uint32_t readLength, WorkQueue& workQueue)
+    : validator_(validator), readLength_(readLength), workQueue_(workQueue)
   {
   }
-  void operator()()
-  {
-    runValidator();
-  }
+  void operator()() { runValidator(); }
   void runValidator();
 };
 

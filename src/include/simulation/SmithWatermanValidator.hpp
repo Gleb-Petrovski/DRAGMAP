@@ -39,12 +39,12 @@ public:
   void printResults();
 
   void validate(
-        const std::uint8_t*                         queryStart,
-        const std::uint8_t*                         queryEnd,
-        const reference::HashtableConfig::Sequence& contig,
-        const std::uint64_t                         refPos,
-        const std::uint32_t                         tLen,
-        const std::string&                          cigar);
+      const std::uint8_t*                         queryStart,
+      const std::uint8_t*                         queryEnd,
+      const reference::HashtableConfig::Sequence& contig,
+      const std::uint64_t                         refPos,
+      const std::uint32_t                         tLen,
+      const std::string&                          cigar);
 };
 
 }  // namespace simulation

@@ -16,12 +16,12 @@
 #include "options/DragenOsOptions.hpp"
 #include "sam/SamGenerator.hpp"
 #include "simulation/ReadGenerator.hpp"
+#include "simulation/ReadPackager.hpp"
 #include "simulation/SamPrinter.hpp"
 #include "simulation/SmithWatermanValidator.hpp"
-#include "simulation/VariantGenerator.hpp"
-#include "simulation/ReadPackager.hpp"
-#include "simulation/WorkQueue.hpp"
 #include "simulation/ValidatorThread.hpp"
+#include "simulation/VariantGenerator.hpp"
+#include "simulation/WorkQueue.hpp"
 
 namespace dragenos {
 
@@ -82,10 +82,10 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
     std::ostream&                      csvFile = os.is_open() ? os : std::cout;
     simulation::SmithWatermanValidator validator(
         referenceDir, options.startFlank_, options.endFlank_, csvFile);
-    simulation::WorkQueue workQueue;
-    simulation::ReadPackager packager(50, workQueue);
+    simulation::WorkQueue       workQueue;
+    simulation::ReadPackager    packager(50, workQueue);
     simulation::ValidatorThread worker(validator, options.readLength_, workQueue);
-    std::thread thread1 (worker);
+    std::thread                 thread1(worker);
 
     const auto& seqs = referenceDir.getHashtableConfig().getSequences();
     for (const auto& s : seqs) {

@@ -13,7 +13,6 @@
  **/
 #pragma once
 
-
 #include "simulation/ReadGenerator.hpp"
 #include "simulation/WorkQueue.hpp"
 
@@ -21,23 +20,23 @@ namespace dragenos {
 namespace simulation {
 
 class ReadPackager : public ReadGenerator::Processor {
-  const std::uint32_t readsPerBlock_;
-  WorkQueue& workQueue_;
+  const std::uint32_t        readsPerBlock_;
+  WorkQueue&                 workQueue_;
   std::vector<unsigned char> block_;
-  std::uint32_t readsIn_ = 0;
+  std::uint32_t              readsIn_ = 0;
 
 public:
-  ReadPackager(std::uint32_t readsPerBlock, WorkQueue& workQueue):readsPerBlock_(readsPerBlock), workQueue_(workQueue)
+  ReadPackager(std::uint32_t readsPerBlock, WorkQueue& workQueue)
+    : readsPerBlock_(readsPerBlock), workQueue_(workQueue)
   {
   }
-  void flush();
+  void         flush();
   virtual void operator()(
       const std::vector<unsigned char>&           query,
       const reference::HashtableConfig::Sequence& contig,
       const std::uint64_t                         refPos,
       const std::uint32_t                         tLen,
       const std::string&                          cigar) override;
-
 };
 
 }  // namespace simulation

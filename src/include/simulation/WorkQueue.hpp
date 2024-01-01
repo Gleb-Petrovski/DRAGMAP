@@ -20,18 +20,16 @@
 namespace dragenos {
 namespace simulation {
 
-class WorkQueue{
+class WorkQueue {
   std::vector<std::uint8_t> block_;
-  std::mutex m_;
-  std::condition_variable cv_;
-  bool ready_ = false;
-  bool processed_ = false;
-  bool lastBlock_ = false;
+  std::mutex                m_;
+  std::condition_variable   cv_;
+  bool                      ready_     = false;
+  bool                      processed_ = false;
+  bool                      lastBlock_ = false;
 
 public:
-  WorkQueue()
-  {
-  }
+  WorkQueue() {}
   void acceptBlock(std::vector<std::uint8_t>& block, bool lastBlock);
   bool getBlock(std::vector<std::uint8_t>& block);
 };
