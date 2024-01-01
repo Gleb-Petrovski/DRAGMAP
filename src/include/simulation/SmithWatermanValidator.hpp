@@ -20,7 +20,7 @@
 namespace dragenos {
 namespace simulation {
 
-class SmithWatermanValidator : public ReadGenerator::Processor {
+class SmithWatermanValidator {
   const SmithWatermanRunner  runner_;
   const std::uint32_t        flankSizeStart_;
   const std::uint32_t        flankSizeEnd_;
@@ -37,13 +37,14 @@ public:
   {
   }
   void printResults();
-  virtual void operator()(
-      const Query&                                query,
-      const reference::HashtableConfig::Sequence& contig,
-      const std::uint64_t                         refPos,
-      const std::uint32_t                         tLen,
-      const std::string&                          cigar) override;
 
+  void validate(
+        const std::uint8_t*                         queryStart,
+        const std::uint8_t*                         queryEnd,
+        const reference::HashtableConfig::Sequence& contig,
+        const std::uint64_t                         refPos,
+        const std::uint32_t                         tLen,
+        const std::string&                          cigar);
 };
 
 }  // namespace simulation

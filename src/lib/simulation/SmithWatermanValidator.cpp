@@ -28,8 +28,9 @@ void SmithWatermanValidator::printResults()
     }
   }
 
-void SmithWatermanValidator::operator()(
-      const Query&                                query,
+void SmithWatermanValidator::validate(
+      const std::uint8_t*                         queryStart,
+      const std::uint8_t*                         queryEnd,
       const reference::HashtableConfig::Sequence& contig,
       const std::uint64_t                         refPos,
       const std::uint32_t                         tLen,
@@ -42,7 +43,7 @@ void SmithWatermanValidator::operator()(
     std::uint32_t start = std::max<std::int64_t>(0, refPos - flankSizeStart_);
     std::uint32_t end   = std::min<std::uint64_t>(contig.seqLen, refPos + flankSizeEnd_ + tLen);
 
-    swCigar = runner_.runSW(query, contig, start, end, refPos, tLen);
+    swCigar = runner_.runSW(queryStart, queryEnd, contig, start, end, refPos, tLen);
 
     ++histogram_.at(c.compareCigars(cigar, swCigar, refPos, start) * 100 / c.countMatches(cigar));
     //      if (print < 1 && c.compareCigars(cigar, swCigar) == 0){

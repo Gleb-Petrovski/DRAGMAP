@@ -121,7 +121,7 @@ void ReadGenerator::generateReads(
   std::uint64_t refPos = 0;
   std::uint32_t varIdx = 0;
 
-  while (refPos < s.seqLen) {
+  while (refPos + readLength_ < s.seqLen) {
     Seq         readSeq;
     std::string readSeqString;
     while (varIdx < vars.size() && vars.at(varIdx).refEnd() <= refPos) {

@@ -23,7 +23,8 @@ namespace dragenos {
 namespace simulation {
 
 std::string SmithWatermanRunner::runSW(
-    const Query&                                query,
+    const std::uint8_t*                                    queryStart,
+    const std::uint8_t*                                    queryEnd,
     const reference::HashtableConfig::Sequence& s,
     const std::uint32_t                         start,
     const std::uint32_t                         end,
@@ -42,8 +43,8 @@ std::string SmithWatermanRunner::runSW(
   dragenos::align::Database seq;
   referenceDir_.getReferenceSequence().getBases(s.seqStart + start, s.seqStart + end, seq);
   sw.align(
-      &query.front(),
-      &query.front() + query.size(),
+      queryStart,
+      queryEnd,
       &seq.front(),
       &seq.front() + seq.size(),
       10,

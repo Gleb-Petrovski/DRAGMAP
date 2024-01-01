@@ -19,6 +19,8 @@
 #include "simulation/SamPrinter.hpp"
 #include "simulation/SmithWatermanValidator.hpp"
 #include "simulation/VariantGenerator.hpp"
+#include "simulation/ReadPackager.hpp"
+#include "simulation/WorkQueue.hpp"
 
 namespace dragenos {
 
@@ -79,10 +81,14 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
     std::ostream&                      csvFile = os.is_open() ? os : std::cout;
     simulation::SmithWatermanValidator validator(
         referenceDir, options.startFlank_, options.endFlank_, csvFile);
+    simulation::WorkQueue workQueue(validator, options.readLength_);
+    simulation::ReadPackager packager(50, workQueue);
+
     const auto& seqs = referenceDir.getHashtableConfig().getSequences();
     for (const auto& s : seqs) {
       const auto vars = vGen.generateVariants(0, s.seqLen);
-      rGen.generateReads(s, referenceDir, vars, validator);
+      rGen.generateReads(s, referenceDir, vars, packager);
+      packager.flush();
     }
     validator.printResults();
   }

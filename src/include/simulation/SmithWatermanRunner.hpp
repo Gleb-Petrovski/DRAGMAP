@@ -25,7 +25,8 @@ class SmithWatermanRunner {
 public:
   SmithWatermanRunner(const reference::ReferenceDir7& referenceDir) : referenceDir_(referenceDir) {}
   std::string runSW(
-      const Query&                                query,
+      const std::uint8_t*                         queryStart,
+      const std::uint8_t*                         queryEnd,
       const reference::HashtableConfig::Sequence& s,
       const std::uint32_t                         start,
       const std::uint32_t                         end,
