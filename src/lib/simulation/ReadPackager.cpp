@@ -25,7 +25,7 @@ void ReadPackager::flush()
   readsIn_ = 0;
 }
 void ReadPackager::operator()(
-    const std::vector<unsigned char>&           query,
+    const std::vector<uint8_t>&           query,
     const reference::HashtableConfig::Sequence& contig,
     const std::uint64_t                         refPos,
     const std::uint32_t                         tLen,

@@ -83,7 +83,8 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
     simulation::SmithWatermanValidator validator(
         referenceDir, options.startFlank_, options.endFlank_, csvFile);
     simulation::WorkQueue       workQueue;
-    simulation::ReadPackager    packager(50, workQueue);
+    std::uint32_t BLOCK_READS = 50000;
+    simulation::ReadPackager    packager(BLOCK_READS, workQueue);
     std::mutex m;
     simulation::ValidatorThread worker(validator, options.readLength_, workQueue, m);
     //std::thread thread(worker);
