@@ -22,12 +22,13 @@ bool WorkQueue::getBlock(std::vector<std::uint8_t>& block)
 {
   bool             ret = false;
   std::unique_lock lk(m_);
-  cv_.wait(lk, [this] { return ready_ || lastBlock_; });
+  cv_.wait(lk, [this] { return !queue_.empty() || lastBlock_ ; });
   //assert(true == ready_);
-  if (ready_) {
-    block_.swap(block);
-    ready_ = false;
-    ret    = true;
+  if (!queue_.empty()) {
+    queue_.front().swap(block);
+    queue_.pop_front();
+    --count_;
+    ret = true;
   }
   // Manual unlocking is done before notifying, to avoid waking up
   // the waiting thread only to block again (see notify_one for details)
@@ -40,11 +41,11 @@ bool WorkQueue::getBlock(std::vector<std::uint8_t>& block)
 void WorkQueue::acceptBlock(std::vector<std::uint8_t>& block, bool lastBlock)
 {
   std::unique_lock lk(m_);
-  cv_.wait(lk, [this] { return !ready_; });
-  assert(!ready_);
-  block_.swap(block);
+  cv_.wait(lk, [this] { return queue_.size() <= maxCount_; });
+  assert(queue_.size() <= maxCount_);
+  queue_.resize(++count_);
+  queue_.back().swap(block);
   lastBlock_ = lastBlock;
-  ready_     = true;
   // Manual unlocking is done before notifying, to avoid waking up
   // the waiting thread only to block again (see notify_one for details)
   lk.unlock();

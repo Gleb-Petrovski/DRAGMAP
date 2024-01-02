@@ -21,14 +21,17 @@ namespace dragenos {
 namespace simulation {
 
 class WorkQueue {
+  const std::uint32_t maxCount_;
   std::vector<std::uint8_t> block_;
+  std::list<std::vector<uint8_t>> queue_;
+  std::uint32_t count_ = 0;
   std::mutex                m_;
   std::condition_variable   cv_;
   bool                      ready_     = false;
   bool                      lastBlock_ = false;
 
 public:
-  WorkQueue() {}
+  WorkQueue(const std::uint32_t maxCount):maxCount_(maxCount) {}
   void acceptBlock(std::vector<std::uint8_t>& block, bool lastBlock);
   bool getBlock(std::vector<std::uint8_t>& block);
 };

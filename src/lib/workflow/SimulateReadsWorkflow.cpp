@@ -82,7 +82,10 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
     std::ostream&                      csvFile = os.is_open() ? os : std::cout;
     simulation::SmithWatermanValidator validator(
         referenceDir, options.startFlank_, options.endFlank_, csvFile);
-    simulation::WorkQueue       workQueue;
+    const unsigned numThreads =
+        options.mapperNumThreads_ ?
+            options.mapperNumThreads_ : std::thread::hardware_concurrency();
+    simulation::WorkQueue workQueue(numThreads);
     std::uint32_t BLOCK_READS = 50000;
     simulation::ReadPackager    packager(BLOCK_READS, workQueue);
     std::mutex m;
@@ -90,7 +93,7 @@ void simulateReads(const dragenos::options::DragenOsOptions& options)
     //std::thread thread(worker);
 
     std::vector<std::thread>                 threads;//(std::thread::hardware_concurrency(),thread);
-    for (unsigned i = 0 ; i <std::thread::hardware_concurrency(); ++i){
+    for (unsigned i = 0 ; i <numThreads; ++i){
       threads.push_back(std::thread(worker));
     }
     const auto& seqs = referenceDir.getHashtableConfig().getSequences();
